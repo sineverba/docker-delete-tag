@@ -1,0 +1,106 @@
+version: 2.1
+executors:
+  arm64_executor:
+    machine:
+      image: ubuntu-2204:2024.01.2
+    resource_class: arm.medium
+    environment:
+      NODE_VERSION: 20.12.1
+      NPM_VERSION: 10.5.1
+      DOCKER_IMAGE: delete-tag
+      BINFMT_VERSION: qemu-v7.0.0-28
+  amd64_executor:
+    machine:
+      image: ubuntu-2204:2024.01.2
+    resource_class: medium
+    environment:
+      NODE_VERSION: 20.12.1
+      NPM_VERSION: 10.5.1
+      DOCKER_IMAGE: delete-tag
+      BINFMT_VERSION: qemu-v7.0.0-28
+jobs:
+  build_arm64:
+    executor: arm64_executor
+    steps:
+      - checkout
+      - run:
+          name: "Login to Docker HUB"
+          command: docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
+      - run:
+          name: "Install tonistiigi/binfmt"
+          command: docker run --rm --privileged tonistiigi/binfmt:$BINFMT_VERSION --install all
+      - run:
+          name: "Create buildx multiarch"
+          command: |
+            docker buildx create \
+            --name multiarch \
+            --use \
+            && docker buildx inspect \
+            --bootstrap \
+            --builder \
+            multiarch
+      - run:
+          name: "Build image and push to Docker HUB"
+          command: |
+            docker buildx build \
+              --cache-to=type=inline \
+              --platform linux/arm64,linux/arm/v6,linux/arm/v7 \
+              --build-arg NODE_VERSION=$NODE_VERSION \
+              --build-arg NPM_VERSION=$NPM_VERSION \
+              --tag $DOCKER_LOGIN/$DOCKER_IMAGE:cache-arm \
+              --push \
+              --file dockerfiles/production/build/docker/Dockerfile \
+              '.'
+  build_amd64:
+    executor: amd64_executor
+    steps:
+      - checkout
+      - run:
+          name: "Login to Docker HUB"
+          command: docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
+      - run:
+          name: "Install tonistiigi/binfmt"
+          command: docker run --rm --privileged tonistiigi/binfmt:$BINFMT_VERSION --install all
+      - run:
+          name: "Create buildx multiarch"
+          command: |
+            docker buildx create \
+            --name multiarch \
+            --use \
+            && docker buildx inspect \
+            --bootstrap \
+            --builder \
+            multiarch
+      - run:
+          name: "Build image and push to Docker HUB"
+          command: |
+            docker buildx build \
+            --cache-from type=registry,ref=$DOCKER_LOGIN/$DOCKER_IMAGE:cache-arm \
+            --platform linux/amd64,linux/arm64,linux/arm/v6,linux/arm/v7 \
+            --build-arg NODE_VERSION=$NODE_VERSION \
+            --build-arg NPM_VERSION=$NPM_VERSION \
+            --tag $DOCKER_LOGIN/$DOCKER_IMAGE:$CIRCLE_TAG \
+            --tag $DOCKER_LOGIN/$DOCKER_IMAGE:latest \
+            --push \
+            --file dockerfiles/production/build/docker/Dockerfile \
+            "."
+workflows:
+  build_docker_images:
+    jobs:
+      - build_arm64:
+          context: SECRETS
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
+      - build_amd64:
+          context: SECRETS
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
+          requires:
+            - build_arm64
+

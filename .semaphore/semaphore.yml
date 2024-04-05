@@ -1,0 +1,64 @@
+version: v1.0
+name: Test
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu2004
+    
+global_job_config:
+  env_vars:
+    - name: NPM_VERSION
+      value: 10.5.1
+    - name: SONARSCANNER_VERSION
+      value: 5.0.1
+  secrets:
+    - name: ACCESS_TOKENS
+  prologue:
+    commands:
+      - checkout
+      - npm install -g npm@$NPM_VERSION
+
+blocks:
+
+  - name: Install dependencies
+    skip:
+      when: "tag =~ '.*'"
+    task:
+      jobs:
+        - name: 'Install'
+          commands:
+            - npm ci
+            - cache store
+
+  - name: Test
+    skip:
+      when: "tag =~ '.*'"
+    task:
+      jobs:
+        - name: Test
+          commands:
+            - cache restore
+            - npm run test
+
+  - name: Coverage
+    skip:
+      when: "tag =~ '.*'"
+    task:
+      prologue:
+        commands:
+          - cache restore
+          - npm run coverage
+      jobs:
+        - name: Coverage
+          commands:
+            - export COVERALLS_REPO_TOKEN=$COVERALLS_DOCKER_DELETE_TAG
+            - cat coverage/lcov.info | node_modules/coveralls/bin/coveralls.js
+        - name: Sonarcloud
+          commands:
+            - >-
+              docker run 
+              --rm 
+              -e SONAR_HOST_URL="https://sonarcloud.io" 
+              -e SONAR_TOKEN=$SONAR_TOKEN 
+              -v $PWD:/usr/src
+              sonarsource/sonar-scanner-cli:$SONARSCANNER_VERSION
