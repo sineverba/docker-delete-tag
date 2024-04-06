@@ -1,8 +1,8 @@
 import { HttpResponse, http } from "msw";
+import login from "../__mocks__/responses/login.json";
 
 export const handlers = [
-  http.get(
-    "https://hub.docker.com/v2/repositories/:docker-login/:docker-image/tags",
-    () => HttpResponse.json(),
+  http.post("https://hub.docker.com/v2/users/login/", () =>
+    HttpResponse.json(login),
   ),
 ];

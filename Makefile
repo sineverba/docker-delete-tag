@@ -64,8 +64,13 @@ test:
 	docker run -it --rm --name $(CONTAINER_NAME) $(IMAGE_NAME):$(APP_VERSION) -v | grep v$(NODE_VERSION)
 
 spin:
-	docker run -it --rm --name $(CONTAINER_NAME) \
-	$(IMAGE_NAME):$(APP_VERSION)
+	docker run \
+		-it \
+		--rm \
+		--name $(CONTAINER_NAME) \
+		-e DOCKER_USERNAME=$(DOCKER_LOGIN) \
+		-e DOCKER_PASSWORD=$(DOCKER_PASSWORD) \
+		$(IMAGE_NAME):$(APP_VERSION)
 
 inspect:
 	docker run \
