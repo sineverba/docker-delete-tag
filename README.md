@@ -31,7 +31,9 @@ Quick Setup:
 
 ```shell
 docker run -d --name delete-tag \
+	-e LOG_LEVEL=debug \
 	-e DOCKER_USERNAME=${DOCKER_USERNAME} \
+	-e DOCKER_PASSWORD=${DOCKER_PASSWORD} \
 	sineverba/delete-tag:0.1.0
 ```
 
@@ -39,5 +41,7 @@ docker run -d --name delete-tag \
 
 | Variable | Usage |
 | -------- | ----- |
+| LOG_LEVEL | Level of the log |
 | DOCKER_USERNAME | Docker hub username |
+| DOCKER_PASSWORD | Docker hub password (could the PAT Personal Access Token) |
 
