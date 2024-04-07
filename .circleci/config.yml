@@ -24,7 +24,7 @@ executors:
       NPM_VERSION: 10.5.1
       DOCKER_IMAGE: delete-tag
       BINFMT_VERSION: qemu-v7.0.0-28
-      DELETE_TAGS_TAG: 0.2.0
+      DELETE_TAGS_TAG: 1.0.0
 jobs:
   test:
     executor: docker_executor
