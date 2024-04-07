@@ -24,7 +24,7 @@ executors:
       NPM_VERSION: 10.5.1
       DOCKER_IMAGE: delete-tag
       BINFMT_VERSION: qemu-v7.0.0-28
-      DELETE_TAGS_TAG: 1.0.0
+      DELETE_TAG_TAG: 1.0.1
 jobs:
   test:
     executor: docker_executor
@@ -118,12 +118,12 @@ jobs:
             -it \
             --rm \
             --name $DOCKER_IMAGE \
-            -e DOCKER_USERNAME=DOCKER_LOGIN \
+            -e DOCKER_USERNAME=$DOCKER_LOGIN \
             -e DOCKER_PASSWORD=$DOCKER_PASSWORD \
-            -e ORGANIZATION=DOCKER_LOGIN \
+            -e ORGANIZATION=$DOCKER_LOGIN \
             -e IMAGE=$DOCKER_IMAGE \
             -e TAG=cache-arm \
-            $DOCKER_IMAGE:$DELETE_TAGS_TAG
+            $DOCKER_LOGIN/DOCKER_IMAGE:$DELETE_TAG_TAG
 workflows:
   test_and_build_images:
     jobs:
