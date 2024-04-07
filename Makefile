@@ -2,7 +2,7 @@ include .env
 
 IMAGE_NAME=sineverba/delete-tag
 CONTAINER_NAME=delete-tag
-APP_VERSION=0.1.0-dev
+APP_VERSION=1.0.0-dev
 NODE_VERSION=20.12.1
 NPM_VERSION=10.5.1
 SONARSCANNER_VERSION=5.0.1
@@ -49,6 +49,9 @@ build:
 		--file dockerfiles/production/build/docker/Dockerfile \
 		"."
 
+push:
+	docker image push $(IMAGE_NAME):$(APP_VERSION)
+
 multi:
 	preparemulti
 	docker buildx build \
@@ -64,8 +67,16 @@ test:
 	docker run -it --rm --name $(CONTAINER_NAME) $(IMAGE_NAME):$(APP_VERSION) -v | grep v$(NODE_VERSION)
 
 spin:
-	docker run -it --rm --name $(CONTAINER_NAME) \
-	$(IMAGE_NAME):$(APP_VERSION)
+	docker run \
+		-it \
+		--rm \
+		--name $(CONTAINER_NAME) \
+		-e DOCKER_USERNAME=$(DOCKER_LOGIN) \
+		-e DOCKER_PASSWORD=$(DOCKER_PASSWORD) \
+		-e ORGANIZATION=$(DOCKER_LOGIN) \
+		-e IMAGE=$(CONTAINER_NAME) \
+		-e TAG=$(TAG) \
+		$(IMAGE_NAME):$(APP_VERSION)
 
 inspect:
 	docker run \
