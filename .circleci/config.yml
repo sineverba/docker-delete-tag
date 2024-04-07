@@ -1,5 +1,10 @@
 version: 2.1
 executors:
+  docker_executor:
+    docker:
+      - image: cimg/node:20.12.1
+    environment:
+      NPM_VERSION: 10.5.1
   arm64_executor:
     machine:
       image: ubuntu-2204:2024.01.2
@@ -19,6 +24,19 @@ executors:
       DOCKER_IMAGE: delete-tag
       BINFMT_VERSION: qemu-v7.0.0-28
 jobs:
+  test:
+    executor: docker_executor
+    steps:
+      - checkout
+      - run:
+          name: "Setup NPM version"
+          command: npm install npm@${NPM_VERSION}
+      - run:
+          name: "Setup project"
+          command: npm ci
+      - run:
+          name: "Run test"
+          command: npm run test
   build_arm64:
     executor: arm64_executor
     steps:
@@ -85,8 +103,14 @@ jobs:
             --file dockerfiles/production/build/docker/Dockerfile \
             "."
 workflows:
-  build_docker_images:
+  test_and_build_images:
     jobs:
+      - test:
+          filters:
+            branches:
+              only:
+                - master
+                - develop
       - build_arm64:
           context: SECRETS
           filters:

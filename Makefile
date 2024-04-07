@@ -49,6 +49,9 @@ build:
 		--file dockerfiles/production/build/docker/Dockerfile \
 		"."
 
+push:
+	docker image push $(IMAGE_NAME):$(APP_VERSION)
+
 multi:
 	preparemulti
 	docker buildx build \
