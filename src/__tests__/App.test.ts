@@ -16,4 +16,19 @@ describe("Test App", () => {
     );
     expect(result).toStrictEqual(login);
   });
+
+  it("Can return empty body on successful delete tag", async () => {
+    const app = new App();
+    const token = "a1b2c3";
+    const organization = process.env.ORGANIZATION;
+    const image = process.env.IMAGE;
+    const tag = process.env.TAG;
+    const result = await app.deleteTag(
+      token,
+      organization as string,
+      image as string,
+      tag as string,
+    );
+    expect(result).toBe("");
+  });
 });
