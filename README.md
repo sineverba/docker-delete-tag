@@ -37,7 +37,7 @@ docker run -d --name delete-tag \
 	-e ORGANIZATION=${ORGANIZATION} \
 	-e IMAGE=${IMAGE} \
 	-e TAG=${TAG} \
-	sineverba/delete-tag:1.0.1
+	sineverba/delete-tag:1.0.2
 ```
 
 ### Variables
