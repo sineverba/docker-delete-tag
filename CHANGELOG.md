@@ -1,4 +1,7 @@
-# 1.0.1
+# 1.0.2
++ Fix docker image name
+
+## 1.0.1
 + Fix docker image name
 
 ## 1.0.0
