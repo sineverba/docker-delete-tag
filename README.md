@@ -1,7 +1,7 @@
 Docker Delete Tag
 =================
 
-> This Docker image will allow you to delete a tag from a Docker image in [Docker Hub](https://hub.docker.com/)
+> This Docker image will allow you to delete a tag from a Docker image in [Docker Hub](https://hub.docker.com/) or in Gitlab Registry.
 
 | CI/CD | Link |
 | ----- | ---- |
@@ -27,7 +27,7 @@ Available architectures:
 
 ## Docker
 
-Quick Setup:
+Quick Setup (to delete a tag in Docker Hub)
 
 ```shell
 docker run -d --name delete-tag \
@@ -40,14 +40,26 @@ docker run -d --name delete-tag \
 	sineverba/delete-tag:1.0.2
 ```
 
+Quick Setup (to delete a tag in Gitlab registry)
+
+```shell
+docker run -d --name delete-tag \
+	-e LOG_LEVEL=debug \
+	-e GITLAB_TOKEN=${GITLAB_TOKEN} \
+	-e IMAGE=${IMAGE} \
+	-e TAG=${TAG} \
+	sineverba/delete-tag:1.0.2
+```
+
 ### Variables
 
-| Variable | Usage |
-| -------- | ----- |
-| LOG_LEVEL | Level of the log |
-| DOCKER_USERNAME | Docker hub username |
-| DOCKER_PASSWORD | Docker hub password (could the PAT Personal Access Token) |
-| ORGANIZATION | Org name |
-| IMAGE | Image name |
-| TAG | Tag to delete |
+| Variable | Usage | Mandatory |
+| -------- | ----- | --------- |
+| LOG_LEVEL | Level of the log | Y |
+| DOCKER_USERNAME | Docker hub username | N - can be omitted but need GITLAB_TOKEN |
+| DOCKER_PASSWORD | Docker hub password (could the PAT Personal Access Token) | N - can be omitted but need GITLAB_TOKEN |
+| GITLAB_TOKEN | Gitlab Personal Access Token | N - Can be omitted but only if specified DOCKER_USERNAME and DOCKER PASSWORD |
+| ORGANIZATION | Org name | N - Only for Docker hub |
+| IMAGE | Image name | Y |
+| TAG | Tag to delete | Y |
 
