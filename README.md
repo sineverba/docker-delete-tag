@@ -1,7 +1,7 @@
 Docker Delete Tag
 =================
 
-> This Docker image will allow you to delete a tag from a Docker image in [Docker Hub](https://hub.docker.com/) or in Gitlab Registry.
+> This Docker image will allow you to delete a tag from a Docker image in [Docker Hub](https://hub.docker.com/)
 
 | CI/CD | Link |
 | ----- | ---- |

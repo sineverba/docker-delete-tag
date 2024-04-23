@@ -1,6 +1,6 @@
 import dotenvFlow from "dotenv-flow";
-import { checkValidToken, logger } from "./utils/utils.js";
-import DockerHub from "./DockerHub.js";
+import { logger } from "./utils/utils.js";
+import App from "./App.js";
 
 /**
  * Initializes the application by loading environment variables, logging the start of the app, and performing necessary checks.
@@ -13,62 +13,38 @@ const initializeApp = async (): Promise<void> => {
   logger.info("App started!");
 
   // Check for required environment variables
-  if (!checkValidToken()) {
-    logger.error(
-      "Cannot find username, password or a Gitlab token. Exiting from the app",
-    );
+  if (!process.env.DOCKER_USERNAME || !process.env.DOCKER_PASSWORD) {
+    logger.error("Cannot find username or password. Exiting from the app");
     process.exit(1);
   }
-  if (!process.env.ORGANIZATION && !process.env.GITLAB_TOKEN) {
-    logger.error("Missing organization and Gitlab Token. Exiting from the app");
-    process.exit(1);
-  }
-  if (!process.env.PROJECT && process.env.GITLAB_TOKEN) {
-    logger.error("Missing project for Gitlab. Exiting from the app");
-    process.exit(1);
-  }
-  if (!process.env.IMAGE || !process.env.TAG) {
+  if (!process.env.ORGANIZATION || !process.env.IMAGE || !process.env.TAG) {
     logger.error("Some required fields are missing. Exiting from the app");
     process.exit(1);
   }
 
-  // Docker Hub section
-  if (
-    process.env.DOCKER_USERNAME &&
-    process.env.DOCKER_PASSWORD &&
-    process.env.ORGANIZATION
-  ) {
-    // Create an instance of the DockerHub class
-    logger.info("Detected settings for Docker Hub.");
-    const app = new DockerHub();
+  // Create an instance of the App class
+  const app = new App();
 
-    // Attempt to authenticate
-    const data = await app.login(
-      process.env.DOCKER_USERNAME,
-      process.env.DOCKER_PASSWORD,
-    );
+  // Attempt to authenticate
+  const data = await app.login(
+    process.env.DOCKER_USERNAME,
+    process.env.DOCKER_PASSWORD,
+  );
 
-    // If authentication fails, exit the app
-    if (!data || !data.token) {
-      logger.error("Cannot authenticate. Exiting from the app");
-      process.exit(1);
-    }
-
-    // If authentication succeeds, proceed to delete the tag
-    const { token } = data;
-    app.deleteTag(
-      token,
-      process.env.ORGANIZATION,
-      process.env.IMAGE,
-      process.env.TAG,
-    );
+  // If authentication fails, exit the app
+  if (!data || !data.token) {
+    logger.error("Cannot authenticate. Exiting from the app");
+    process.exit(1);
   }
 
-  if (process.env.GITLAB_TOKEN && !process.env.DOCKER_USERNAME) {
-    logger.info("Detected settings for Gitlab Registry");
-    logger.info("! WORK IN PROGRESS ! ");
-    logger.info("! NOTHING DONE ! ");
-  }
+  // If authentication succeeds, proceed to delete the tag
+  const { token } = data;
+  app.deleteTag(
+    token,
+    process.env.ORGANIZATION,
+    process.env.IMAGE,
+    process.env.TAG,
+  );
 
   // Log completion and exit the app
   logger.info("Work completed. Exiting from the app");

@@ -2,6 +2,7 @@
 + Upgrade dependencies
 + Reset gitlab
 + Fix Readme
++ Remove all Gitlab references
 
 ## 1.0.2
 + Fix docker image name
