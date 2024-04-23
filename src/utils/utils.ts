@@ -90,4 +90,48 @@ const logger: winston.Logger = winston.createLogger({
   ],
 });
 
-export { getLogLevel, formatLogMessage, logger };
+/**
+ * Checks the validity of tokens based on the following rules:
+ *
+ * - If both DOCKER_USERNAME and DOCKER_PASSWORD are defined and non-empty, returns true.
+ * - If both DOCKER_USERNAME, DOCKER_PASSWORD, and GITLAB_TOKEN are defined and non-empty, returns true.
+ * - If GITLAB_TOKEN is defined and non-empty, returns true.
+ * - If DOCKER_USERNAME is defined but DOCKER_PASSWORD is not, or vice versa, returns false.
+ *
+ * @returns A boolean indicating whether the tokens are valid.
+ *
+ * @example
+ *
+ * // Returns true if both DOCKER_USERNAME and DOCKER_PASSWORD are defined and non-empty,
+ * // or if GITLAB_TOKEN is defined and non-empty.
+ * checkValidToken();
+ *
+ * process.env.DOCKER_USERNAME = 'username';
+ * process.env.DOCKER_PASSWORD = 'password';
+ * process.env.GITLAB_TOKEN = 'gitlab_token';
+ *
+ * // Returns true since all tokens are defined and non-empty.
+ * checkValidToken();
+ *
+ * process.env.DOCKER_PASSWORD = ''; // Emptying DOCKER_PASSWORD
+ *
+ * // Returns false since DOCKER_PASSWORD is now empty.
+ * checkValidToken();
+ *
+ * delete process.env.DOCKER_USERNAME; // Removing DOCKER_USERNAME
+ *
+ * // Returns true since GITLAB_TOKEN is still defined and non-empty.
+ * checkValidToken();
+ */
+const checkValidToken = (): boolean => {
+  return (
+    !!(
+      process.env.DOCKER_USERNAME &&
+      process.env.DOCKER_PASSWORD &&
+      process.env.DOCKER_USERNAME.trim() !== "" &&
+      process.env.DOCKER_PASSWORD.trim() !== ""
+    ) || !!process.env.GITLAB_TOKEN
+  );
+};
+
+export { getLogLevel, formatLogMessage, logger, checkValidToken };
