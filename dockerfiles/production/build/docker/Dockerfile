@@ -3,10 +3,9 @@
 #       TESTER
 #
 ######################################
-ARG NODE_VERSION=latest
+ARG NODE_VERSION
 FROM node:$NODE_VERSION-alpine3.19 AS tester
-ARG NPM_VERSION=latest
-ENV NPM_VERSION $NPM_VERSION
+ARG NPM_VERSION
 ENV CI=true
 # Add a workdir directory
 WORKDIR /app
@@ -28,7 +27,7 @@ RUN npm run prettier
 #       COMPILER
 #
 ######################################
-FROM node:${NODE_VERSION}-alpine3.19 as compiler
+FROM node:$NODE_VERSION-alpine3.19 as compiler
 # Add a workdir directory
 WORKDIR /app
 # Copy necessary files and install dependencies
@@ -45,7 +44,7 @@ RUN npm run build
 #       BUILDER
 #
 ######################################
-FROM node:${NODE_VERSION}-alpine3.19 as builder
+FROM node:$NODE_VERSION-alpine3.19 as builder
 ## Update and upgrade
 RUN apk update && \
     apk add --upgrade apk-tools && \

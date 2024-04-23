@@ -2,26 +2,26 @@ version: 2.1
 executors:
   docker_executor:
     docker:
-      - image: cimg/node:20.12.1
+      - image: cimg/node:20.12.2
     resource_class: medium
     environment:
-      NPM_VERSION: 10.5.1
+      NPM_VERSION: 10.5.2
   arm64_executor:
     machine:
-      image: ubuntu-2204:2024.01.2
+      image: ubuntu-2204:current
     resource_class: arm.medium
     environment:
-      NODE_VERSION: 20.12.1
-      NPM_VERSION: 10.5.1
+      NODE_VERSION: 20.12.2
+      NPM_VERSION: 10.5.2
       DOCKER_IMAGE: delete-tag
       BINFMT_VERSION: qemu-v7.0.0-28
   amd64_executor:
     machine:
-      image: ubuntu-2204:2024.01.2
+      image: ubuntu-2204:current
     resource_class: medium
     environment:
-      NODE_VERSION: 20.12.1
-      NPM_VERSION: 10.5.1
+      NODE_VERSION: 20.12.2
+      NPM_VERSION: 10.5.2
       DOCKER_IMAGE: delete-tag
       BINFMT_VERSION: qemu-v7.0.0-28
       DELETE_TAG_TAG: 1.0.2
@@ -39,6 +39,8 @@ jobs:
       - run:
           name: "Run test"
           command: npm run test
+      - store_test_results:
+          path: ./.test_report
   build_arm64:
     executor: arm64_executor
     steps:
