@@ -1,5 +1,6 @@
 # Next version
 + Upgrade dependencies
++ Reset gitlab
 
 ## 1.0.2
 + Fix docker image name
