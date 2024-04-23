@@ -2,6 +2,7 @@
 + Upgrade dependencies
 + Set deviation for Docker Hub or Gitlab
 + Add method to check tokens
++ Add filter on project to return ID
 
 ## 1.0.2
 + Fix docker image name

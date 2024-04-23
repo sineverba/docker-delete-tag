@@ -1,0 +1,10 @@
+[
+  {
+    "id": 12345678,
+    "description": null,
+    "name": "Project",
+    "name_with_namespace": "Namespace / Project",
+    "path": "project",
+    "path_with_namespace": "namespace/project"
+  }
+]

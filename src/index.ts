@@ -23,6 +23,10 @@ const initializeApp = async (): Promise<void> => {
     logger.error("Missing organization and Gitlab Token. Exiting from the app");
     process.exit(1);
   }
+  if (!process.env.PROJECT && process.env.GITLAB_TOKEN) {
+    logger.error("Missing project for Gitlab. Exiting from the app");
+    process.exit(1);
+  }
   if (!process.env.IMAGE || !process.env.TAG) {
     logger.error("Some required fields are missing. Exiting from the app");
     process.exit(1);
