@@ -9,7 +9,7 @@ interface Token {
 /**
  * Represents the main application class responsible for interacting with the Docker Hub API.
  */
-export default class App {
+export default class DockerHub {
   private baseUrl: string = "https://hub.docker.com/v2/";
 
   /**
