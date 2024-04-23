@@ -1,4 +1,5 @@
 /// <reference types="vitest" />
+import { config } from "dotenv-flow";
 import { defineConfig } from "vite";
 import { configDefaults } from "vitest/config";
 
@@ -8,6 +9,9 @@ export default defineConfig({
       include: ["src/**"],
       exclude: [...(configDefaults.coverage.exclude || []), "src/index.*"],
       reporter: ["text", "lcov"],
+    },
+    env: {
+      ...config({ path: "./" }).parsed,
     },
     environment: "jsdom",
     globals: true,
