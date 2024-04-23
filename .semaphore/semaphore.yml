@@ -8,7 +8,7 @@ agent:
 global_job_config:
   env_vars:
     - name: NPM_VERSION
-      value: 10.5.1
+      value: 10.5.2
     - name: SONARSCANNER_VERSION
       value: 5.0.1
   secrets:
@@ -39,7 +39,8 @@ blocks:
           commands:
             - cache restore
             - npm run test
-
+            - '[[ -f ./.test_report/test-output.xml ]] && test-results publish ./.test_report/test-output.xml'
+            - test-results gen-pipeline-report
   - name: Coverage
     skip:
       when: "tag =~ '.*'"

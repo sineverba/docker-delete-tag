@@ -1,12 +1,10 @@
-include .env
-
 IMAGE_NAME=sineverba/delete-tag
 CONTAINER_NAME=delete-tag
 APP_VERSION=1.0.2-dev
-NODE_VERSION=20.12.1
-NPM_VERSION=10.5.1
+NODE_VERSION=20.12.2
+NPM_VERSION=10.5.2
 SONARSCANNER_VERSION=5.0.1
-BUILDX_VERSION=0.13.1
+BUILDX_VERSION=0.14.0
 BINFMT_VERSION=qemu-v7.0.0-28
 
 sonar:
@@ -49,9 +47,6 @@ build:
 		--file dockerfiles/production/build/docker/Dockerfile \
 		"."
 
-push:
-	docker image push $(IMAGE_NAME):$(APP_VERSION)
-
 multi:
 	preparemulti
 	docker buildx build \
@@ -60,6 +55,9 @@ multi:
 		--tag $(IMAGE_NAME):$(APP_VERSION) \
 		--file dockerfiles/production/build/docker/Dockerfile \
 		"."
+
+push:
+	docker image push $(IMAGE_NAME):$(APP_VERSION)
 
 test:
 	docker run -it --rm --entrypoint cat --name $(CONTAINER_NAME) $(IMAGE_NAME):$(APP_VERSION) /etc/os-release | grep "Alpine Linux v3.19"
@@ -86,4 +84,11 @@ inspect:
 	$(IMAGE_NAME):$(APP_VERSION)
 
 destroy:
-	docker image rm $(IMAGE_NAME):$(APP_VERSION)
+	# Remove all images with no current tag
+	docker rmi $$(docker images $(IMAGE_NAME):* --format "{{.Repository}}:{{.Tag}}" | grep -v '$(APP_VERSION)') || exit 0;
+	# Remove all node images
+	docker rmi $$(docker images node --format "{{.Repository}}:{{.Tag}}") || exit 0;
+	# Remove all dangling images
+	docker rmi $$(docker images -f "dangling=true" -q) || exit 0;
+	# Remove cached builder
+	docker builder prune -f

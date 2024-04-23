@@ -1,4 +1,7 @@
-# 1.0.2
+# Next version
++ Upgrade dependencies
+
+## 1.0.2
 + Fix docker image name
 
 ## 1.0.1
