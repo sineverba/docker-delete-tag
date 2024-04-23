@@ -134,4 +134,39 @@ const checkValidToken = (): boolean => {
   );
 };
 
-export { getLogLevel, formatLogMessage, logger, checkValidToken };
+/**
+ * Filters an array of projects based on the provided criteria and returns the ID of the first matching project.
+ *
+ * @param projects An array containing project objects.
+ * @returns The ID of the first project matching the criteria, converted to a string, or null if no matching project is found.
+ *
+ * @example
+ *
+ * const projects = [
+ *   { id: 1, path: 'project1' },
+ *   { id: 2, path: 'project2' },
+ *   { id: 3, path: 'project3' }
+ * ];
+ *
+ * process.env.PROJECT = 'project2';
+ *
+ * // Returns '2' since it finds the project with path 'project2' and returns its ID as a string.
+ * filterProject(projects);
+ *
+ * process.env.PROJECT = 'project4';
+ *
+ * // Returns null since there's no project with path 'project4'.
+ * filterProject(projects);
+ */
+const filterProject = (projects: any): string | null =>
+  projects
+    .filter((project: any) => project.path === process.env.PROJECT)[0]
+    ?.id.toString() || null;
+
+export {
+  getLogLevel,
+  formatLogMessage,
+  logger,
+  checkValidToken,
+  filterProject,
+};
