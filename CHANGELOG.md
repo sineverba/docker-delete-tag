@@ -1,6 +1,7 @@
 # Next version
 + Upgrade dependencies
 + Set deviation for Docker Hub or Gitlab
++ Add method to check tokens
 
 ## 1.0.2
 + Fix docker image name

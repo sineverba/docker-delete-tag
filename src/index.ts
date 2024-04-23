@@ -1,5 +1,5 @@
 import dotenvFlow from "dotenv-flow";
-import { logger } from "./utils/utils.js";
+import { checkValidToken, logger } from "./utils/utils.js";
 import DockerHub from "./DockerHub.js";
 
 /**
@@ -13,10 +13,7 @@ const initializeApp = async (): Promise<void> => {
   logger.info("App started!");
 
   // Check for required environment variables
-  if (
-    (!process.env.DOCKER_USERNAME || !process.env.DOCKER_PASSWORD) &&
-    !process.env.GITLAB_TOKEN
-  ) {
+  if (!checkValidToken()) {
     logger.error(
       "Cannot find username, password or a Gitlab token. Exiting from the app",
     );
